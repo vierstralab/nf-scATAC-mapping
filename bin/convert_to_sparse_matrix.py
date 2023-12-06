@@ -19,7 +19,7 @@ def create_mapping(filename):
 if __name__ == '__main__':
     data = pd.read_table(sys.argv[1], header=None, names=['dhs_id', 'fragment_id'])
 
-    fragments_mapping = create_mapping(sys.argv[32])
+    fragments_mapping = create_mapping(sys.argv[2])
     dhs_mapping = create_mapping(sys.argv[3])
 
     sparse_matrix = main(data, fragments_mapping=fragments_mapping, dhs_mapping=dhs_mapping)

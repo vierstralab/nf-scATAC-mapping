@@ -42,7 +42,7 @@ process split_masterlist_in_chunks {
 process intersect_with_chunk {
     conda params.conda
     tag "${file_id}:${chunk_id}"
-    scratch true
+    //scratch true
 
     input:
         tuple val(file_id), path(barcodes_map), val(chunk_id), path(index_chunk), path(fragment_file)
