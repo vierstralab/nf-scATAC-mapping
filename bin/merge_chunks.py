@@ -12,4 +12,4 @@ if __name__ == '__main__':
     maps = [np.loadtxt(f"{x}.unique_barcodes.map", dtype=str) for x in samples_meta['fragment_file_id']]
     concat_matrix, concat_map = main(matrices, maps)
     save_npz(f"{sys.argv[2]}.sparse_matrix.npz", concat_matrix)
-    np.savetxt(f"{sys.argv[2]}.fragments.map", concat_map)
+    np.savetxt(f"{sys.argv[2]}.fragments.map", concat_map, fmt="%s")
