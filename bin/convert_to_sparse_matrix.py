@@ -9,7 +9,7 @@ def main(melt_df, dhs_mapping, fragments_mapping):
     melt_df['dhs_index'] = melt_df['dhs_id'].map(dhs_mapping)
     melt_df['fragment_index'] = melt_df['fragment_id'].map(fragments_mapping)
     return coo_matrix((melt_df['value'], (melt_df['dhs_index'], melt_df['fragment_index'])),
-                    shape=(len(dhs_mapping), len(fragments_mapping)), dtype=np.uint8)
+                    shape=(len(dhs_mapping), len(fragments_mapping)), dtype=np.uint16)
 
 
 def create_mapping(filename):
