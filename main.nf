@@ -5,6 +5,7 @@ params.conda = "$moduleDir/environment.yml"
 process find_unique_barcodes {
 
     publishDir "${params.outdir}/barcodes_maps"
+    tag "${file_id}"
 
     input:
         tuple val(file_id), path(fragment_file)
