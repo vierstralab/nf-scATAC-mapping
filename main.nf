@@ -49,9 +49,9 @@ process intersect_with_index {
     script:
     name = "${file_id}.barcodes.npz"
     """
-    bedtools intersect \
+    sort-bed ${fragment_file} | bedtools intersect \
         -a ${params.index_file} \
-        -b ${fragment_file} \
+        -b stdin \
         -wa -wb -sorted \
         | cut -f4,16 > tmp.txt
     
