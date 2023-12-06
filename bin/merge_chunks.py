@@ -3,7 +3,7 @@ import sys
 import pandas as pd
 import numpy as np
 
-def main():
+def main(matrices, maps):
     return hstack(matrices), np.concatenate(maps)
 
 if __name__ == '__main__':
