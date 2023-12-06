@@ -17,10 +17,12 @@ def create_mapping(filename):
 
 
 if __name__ == '__main__':
+    print("Reading files")
     data = pd.read_table(sys.argv[1], header=None, names=['dhs_id', 'fragment_id'])
 
     fragments_mapping = create_mapping(sys.argv[2])
     dhs_mapping = create_mapping(sys.argv[3])
-
+    print("Converting to sparse matrix")
     sparse_matrix = main(data, fragments_mapping=fragments_mapping, dhs_mapping=dhs_mapping)
+    print("Saving sparse matrix")
     save_npz(sys.argv[4], sparse_matrix)
