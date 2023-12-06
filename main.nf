@@ -102,7 +102,7 @@ workflow map2Index {
         out = fragment_files // id, fragment_file
             | find_unique_barcodes // id, barcodes_map
             | combine(chunks) // id, barcodes_map, chunk_id, chunk
-            | join(fragment_files) // id, barcodes_map, chunk_id, chunk, fragment_file
+            | combine(fragment_files, by:0) // id, barcodes_map, chunk_id, chunk, fragment_file
             | intersect_with_chunk 
             //| groupTuple()
             //| merge_chunks_horizontally()
