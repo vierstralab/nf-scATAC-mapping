@@ -111,6 +111,8 @@ workflow map2Index {
 
 
 workflow {
-    Channel.fromPath()
+    Channel.fromPath(params.samples_file)
+        | splitCsv(header: true, sep: '\t')
+        | map(row -> tuple(row.fragment_file_id, file(row.fragment_file)))
         | map2Index
 }
