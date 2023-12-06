@@ -57,7 +57,7 @@ process intersect_with_chunk {
         -a ${index_chunk} \
         -b ${fragment_file} \
         -wa -wb \
-        | cut -f4,11 > tmp.txt
+        | cut -f4,16 > tmp.txt
     
     cut -f4 ${index_chunk} > index_mapping.txt
 
