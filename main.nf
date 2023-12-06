@@ -4,7 +4,6 @@ params.conda = "$moduleDir/environment.yml"
 
 process find_unique_barcodes {
 
-    publishDir "${params.outdir}/barcodes_maps"
     tag "${file_id}"
 
     input:
@@ -20,73 +19,67 @@ process find_unique_barcodes {
     """
 }
 
-
-process split_masterlist_in_chunks {
-
-    publishDir "${params.outdir}/index_chunks"
+process create_dhs_map {
 
     output:
-        path "${prefix}*"
+        path name
+
 
     script:
-    prefix = "chunk_"
+    name = "index_mapping.txt"
     """
-    split -l ${params.chunk_size} \
-        --additional-suffix=.bed \
-        ${params.index_file} \
-        ${prefix} 
+    cut -f4 ${params.index_file} > ${name}
     """
 }
 
 
-process intersect_with_chunk {
+process intersect_with_index {
     conda params.conda
-    tag "${file_id}:${chunk_id}"
+    tag "${file_id}"
     label "med_mem"
     //scratch true
 
     input:
-        tuple val(file_id), path(barcodes_map), val(chunk_id), path(index_chunk), path(fragment_file)
+        tuple val(file_id), path(barcodes_map), path(dhs_map), path(fragment_file)
     
     output:
-        tuple val(chunk_id), path(barcodes_map), path(name)
+        tuple path(name), path(barcodes_map)
 
     script:
-    name = "${file_id}.${chunk_id}.barcodes.npz"
+    name = "${file_id}.barcodes.npz"
     """
     bedtools intersect \
-        -a ${index_chunk} \
+        -a ${params.index_file} \
         -b ${fragment_file} \
-        -wa -wb \
+        -wa -wb -sorted \
         | cut -f4,16 > tmp.txt
     
-    cut -f4 ${index_chunk} > index_mapping.txt
 
     python3 $moduleDir/bin/convert_to_sparse_matrix.py \
         tmp.txt \
         ${barcodes_map} \
-        index_mapping.txt \
+        ${dhs_map} \
         ${name}
     """
 }
 
 
-process merge_chunks_horizontally {
+process merge_chunks {
     conda params.conda
-    publishDir "${params.outdir}/matrix_chunks"
+    publishDir "${params.outdir}"
 
     input:
-        path sparse_matrices
+        path matrices_and_maps
     
     output:
-        path name
+        path "${prefix}*"
     
     script:
-    name = ""
+    prefix = "all_barcodes"
     """
     python3 $moduleDir/bin/merge_chunks.py \
-        ${name} \
-        ${sparse_matrices}
+        ${params.samples_file} \
+        ${prefix}
     """
 
 }
@@ -96,17 +89,17 @@ workflow map2Index {
     take:
         fragment_files
     main:
-        chunks = split_masterlist_in_chunks() 
-            | flatten()
-            | map(it -> tuple(it.simpleName, it)) // chunk_id, chunk
+        dhs_map = 
 
         out = fragment_files // id, fragment_file
             | find_unique_barcodes // id, barcodes_map
-            | combine(chunks) // id, barcodes_map, chunk_id, chunk
-            | combine(fragment_files, by:0) // id, barcodes_map, chunk_id, chunk, fragment_file
-            | intersect_with_chunk 
-            //| groupTuple()
-            //| merge_chunks_horizontally()
+            | combine(
+                create_dhs_map()
+            ) // id, barcodes_map, dhs_map
+            | combine(fragment_files, by:0) // id, barcodes_map, fragment_file
+            | intersect_with_index
+            | collect(flatten: true, sort: true)
+            | merge_chunks
     emit:
         out
 }
