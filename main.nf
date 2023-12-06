@@ -98,7 +98,7 @@ workflow map2Index {
             ) // id, barcodes_map, dhs_map
             | combine(fragment_files, by:0) // id, barcodes_map, fragment_file
             | intersect_with_index
-            | collect(flatten: true, sort: true)
+            | collect(flat: true, sort: true)
             | merge_chunks
     emit:
         out
