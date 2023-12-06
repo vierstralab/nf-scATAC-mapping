@@ -42,6 +42,7 @@ process split_masterlist_in_chunks {
 process intersect_with_chunk {
     conda params.conda
     tag "${file_id}:${chunk_id}"
+    label "med_mem"
     //scratch true
 
     input:
