@@ -8,7 +8,8 @@ def main(melt_df, dhs_mapping, fragments_mapping):
     melt_df = melt_df.groupby(['dhs_id', 'fragment_id']).size().reset_index(name='value')
     melt_df['dhs_index'] = melt_df['dhs_id'].map(dhs_mapping)
     melt_df['fragment_index'] = melt_df['fragment_id'].map(fragments_mapping)
-    return coo_matrix((melt_df['value'], (melt_df['dhs_index'], melt_df['fragment_index'])))
+    return coo_matrix((melt_df['value'], (melt_df['dhs_index'], melt_df['fragment_index'])),
+                    shape=(len(dhs_mapping), len(fragments_mapping)))
 
 
 def create_mapping(filename):
