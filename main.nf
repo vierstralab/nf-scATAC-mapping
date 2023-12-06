@@ -38,7 +38,7 @@ process intersect_with_index {
     conda params.conda
     tag "${file_id}"
     label "med_mem"
-    //scratch true
+    scratch true
 
     input:
         tuple val(file_id), path(barcodes_map), path(dhs_map), path(fragment_file)
@@ -68,6 +68,7 @@ process intersect_with_index {
 process merge_chunks {
     conda params.conda
     publishDir params.outdir
+    label "high_mem"
 
     input:
         path matrices_and_maps
