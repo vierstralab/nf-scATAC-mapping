@@ -21,6 +21,7 @@ process find_unique_barcodes {
 
 process create_dhs_map {
 
+    publishDir params.outdir
     output:
         path name
 
@@ -66,7 +67,7 @@ process intersect_with_index {
 
 process merge_chunks {
     conda params.conda
-    publishDir "${params.outdir}"
+    publishDir params.outdir
 
     input:
         path matrices_and_maps
