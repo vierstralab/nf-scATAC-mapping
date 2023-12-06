@@ -45,7 +45,7 @@ process intersect_with_chunk {
     scratch true
 
     input:
-        tuple val(file_id), path(barcodes_map), path(fragment_file), val(chunk_id), path(index_chunk)
+        tuple val(file_id), path(barcodes_map), val(chunk_id), path(index_chunk), path(fragment_file)
     
     output:
         tuple val(chunk_id), path(barcodes_map), path(name)
@@ -97,13 +97,13 @@ workflow map2Index {
     main:
         chunks = split_masterlist_in_chunks() 
             | flatten()
-            | map(it -> tuple(it.simpleName, it))
+            | map(it -> tuple(it.simpleName, it)) // chunk_id, chunk
 
-        out = fragment_files
-            | find_unique_barcodes
-            | combine(chunks)
-            | join(fragment_files)
-            | intersect_with_chunk
+        out = fragment_files // id, fragment_file
+            | find_unique_barcodes // id, barcodes_map
+            | combine(chunks) // id, barcodes_map, chunk_id, chunk
+            | join(fragment_files) // id, barcodes_map, chunk_id, chunk, fragment_file
+            | intersect_with_chunk 
             //| groupTuple()
             //| merge_chunks_horizontally()
     emit:
