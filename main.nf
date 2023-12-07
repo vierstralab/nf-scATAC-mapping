@@ -91,8 +91,6 @@ workflow map2Index {
     take:
         fragment_files
     main:
-        dhs_map = 
-
         out = fragment_files // id, fragment_file
             | find_unique_barcodes // id, barcodes_map
             | combine(
