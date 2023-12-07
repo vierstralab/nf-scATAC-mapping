@@ -96,10 +96,10 @@ workflow map2Index {
             | combine(
                 create_dhs_map()
             ) // id, barcodes_map, dhs_map
-            | combine(fragment_files, by:0) // id, barcodes_map, fragment_file
-            | intersect_with_index
+            | combine(fragment_files, by:0) // id, barcodes_map, dhs_map, fragment_file
+            | intersect_with_index // barcodes_map, sparse_matrix
             | collect(flat: true, sort: true)
-            | merge_chunks
+            | merge_chunks // matrices_and_maps
     emit:
         out
 }
